@@ -134,14 +134,53 @@ public:
     }
 };
 
+// Function to parse the input text file and store edges in a vector
+void parseEdges(const string& filename, vector<tuple<int, int, int>>& edges) {
+    ifstream file(filename);  // Open the file
 
-int main(){
-    Graph g(4);
-    g.addEdge(0, 1, 10);
-    g.addEdge(0, 2, 6);
-    g.addEdge(0, 3, 5);
-    g.addEdge(1, 3, 15);
-    g.addEdge(2, 3, 4);
-    
-    g.BoruvkaMST();
+    if (!file.is_open()) {
+        cerr << "Error: Could not open the file!" << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        stringstream ss(line);  // Create a stringstream for the current line
+        int u, v, w;
+        ss >> u >> v >> w;  // Read u, v, w from the line
+
+        // Add the edge (u, v, w) to the edges vector
+        edges.push_back(make_tuple(u, v, w));
+    }
+
+    file.close();  // Close the file
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 3) {
+        printf("./boruvka v edges.txt\n");
+        exit(0);
+    }
+
+    string ifile = "";
+    int vertices = 0;
+
+    vertices = atoi(argv[1]);
+    ifile = argv[2];
+
+    vector<tuple<int,int,int>> edges;
+    parseEdges(ifile, edges);
+
+    // Example graph (4 vertices, 5 edges)
+    Graph* g = new Graph(vertices);
+
+    // Add edges to graph
+    for (const auto& edge : edges) {
+        int u, v, w;
+        tie(u, v, w) = edge;  // Extract u, v, w from the tuple
+        g->addEdge(u, v, w);
+    }
+
+    // Run Boruvka's MST algorithm
+    g->BoruvkaMST();
 }

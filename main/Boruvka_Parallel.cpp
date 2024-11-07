@@ -121,8 +121,8 @@ public:
 
             // Once the cheapest edges are found, join them and update corresponding rank values
             #pragma omp parallel num_threads(NUM_THREADS)
-            {
-                #pragma omp for reduction(+:MSTweight)
+            {   
+                #pragma omp for reduction(+: MSTweight)
                 for (int node = 0; node < V; node++) {
                     // If the cheapest weight has been found
                     if (cheapest[node][2] != -1) {
@@ -135,19 +135,20 @@ public:
 
                         if (parent_u != parent_v) {
                             // Update the MST weight
+                            printf("%d and %d joined\n", u, v);
                             MSTweight += w;
 
                             // Merge the two trees into one
+                            #pragma omp critical
                             unionSet(parent, rank, parent_u, parent_v);
 
-                            // Decrement the number of trees
-                            #pragma omp atomic
+                            // Increment the number of joins
+                            #pragma omp critical
                             numTrees -= 1;
                         }
                     }
                 }
             }
-
             // Reset the cheapest vector after merging trees
             fill(cheapest.begin(), cheapest.end(), vector<int>(3, -1));
         }
@@ -157,22 +158,54 @@ public:
     }
 };
 
+// Function to parse the input text file and store edges in a vector
+void parseEdges(const string& filename, vector<tuple<int, int, int>>& edges) {
+    ifstream file(filename);  // Open the file
+
+    if (!file.is_open()) {
+        cerr << "Error: Could not open the file!" << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        stringstream ss(line);  // Create a stringstream for the current line
+        int u, v, w;
+        ss >> u >> v >> w;  // Read u, v, w from the line
+
+        // Add the edge (u, v, w) to the edges vector
+        edges.push_back(make_tuple(u, v, w));
+    }
+
+    file.close();  // Close the file
+}
+
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        printf("./boruvka t\n");
+    if (argc < 3) {
+        printf("./boruvka t v edges.txt\n");
         exit(0);
     }
 
+    string ifile = "";
+    int vertices = 0;
+
     NUM_THREADS = atoi(argv[1]);
+    vertices = atoi(argv[2]);
+    ifile = argv[3];
+
+    vector<tuple<int,int,int>> edges;
+    parseEdges(ifile, edges);
 
     // Example graph (4 vertices, 5 edges)
-    Graph g(4);
-    g.addEdge(0, 1, 10);
-    g.addEdge(0, 2, 6);
-    g.addEdge(0, 3, 5);
-    g.addEdge(1, 3, 15);
-    g.addEdge(2, 3, 4);
+    Graph* g = new Graph(vertices);
+
+    // Add edges to graph
+    for (const auto& edge : edges) {
+        int u, v, w;
+        tie(u, v, w) = edge;  // Extract u, v, w from the tuple
+        g->addEdge(u, v, w);
+    }
 
     // Run Boruvka's MST algorithm
-    g.BoruvkaMST();
+    g->BoruvkaMST();
 }
