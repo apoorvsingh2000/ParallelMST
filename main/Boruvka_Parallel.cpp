@@ -19,9 +19,9 @@ class Graph {
     }
 
     // Function to join two disjoint sets, does so by the context of ranks
-    void unionSet(vector<int>& parent, vector<int>& rank, int x, int y) {
-        int x_parent = findParent(parent, x);
-        int y_parent = findParent(parent, y);
+    void unionSet(vector<int>& parent, vector<int>& rank, int& x_parent, int& y_parent) {
+        //int x_parent = findParent(parent, x);
+        //int y_parent = findParent(parent, y);
         int x_rank = rank[x_parent];
         int y_rank = rank[y_parent];
 
@@ -87,9 +87,10 @@ public:
 
         // Loop until the number of trees becomes 1
         while (numTrees > 1) {
+            // printf("trees: %d\n", numTrees);
             // Traverse through the edges in the graph and assign the lowest weights to all parent nodes.
             #pragma omp parallel num_threads(NUM_THREADS)
-            {   
+            {
                 int size = graph.size();
 
                 #pragma omp for
@@ -105,50 +106,55 @@ public:
                         // Update the cheapest edge if a smaller weight is found
                         vector<int> entry = {u, v, w};
 
+                        omp_set_lock(&myLock[parent_u]);
                         if (cheapest[parent_u][2] == -1 || cheapest[parent_u][2] > w) {
-                            omp_set_lock(&myLock[parent_u]);
                             cheapest[parent_u] = entry;
-                            omp_unset_lock(&myLock[parent_u]);
                         }
+                        omp_unset_lock(&myLock[parent_u]);
+
+                        omp_set_lock(&myLock[parent_v]);
                         if (cheapest[parent_v][2] == -1 || cheapest[parent_v][2] > w) {
-                            omp_set_lock(&myLock[parent_v]);
                             cheapest[parent_v] = entry;
-                            omp_unset_lock(&myLock[parent_v]);
                         }
+                        omp_unset_lock(&myLock[parent_v]);
                     }
                 }
             }
 
             // Once the cheapest edges are found, join them and update corresponding rank values
             #pragma omp parallel num_threads(NUM_THREADS)
-            {   
-                #pragma omp for reduction(+: MSTweight)
+            {
+                #pragma omp for
                 for (int node = 0; node < V; node++) {
                     // If the cheapest weight has been found
                     if (cheapest[node][2] != -1) {
                         // Unzip the values of u, v, w
                         int u = cheapest[node][0], v = cheapest[node][1], w = cheapest[node][2];
+                        int parent_u, parent_v;
 
-                        // Find parent of u and v
-                        int parent_u = findParent(parent, u);
-                        int parent_v = findParent(parent, v);
+                        // Critical section for finding and merging trees
+                        #pragma omp critical
+                        {
+                            // Find parent of u and v
+                            parent_u = findParent(parent, u);
+                            parent_v = findParent(parent, v);
 
-                        if (parent_u != parent_v) {
-                            // Update the MST weight
-                            printf("%d and %d joined\n", u, v);
-                            MSTweight += w;
+                            // Merge trees only if they have different parents
+                            if (parent_u != parent_v) {
+                                // Update the MST weight
+                                MSTweight += w;
 
-                            // Merge the two trees into one
-                            #pragma omp critical
-                            unionSet(parent, rank, parent_u, parent_v);
+                                // Merge the two trees into one
+                                unionSet(parent, rank, parent_u, parent_v);
 
-                            // Increment the number of joins
-                            #pragma omp critical
-                            numTrees -= 1;
+                                // Decrement the number of trees
+                                numTrees -= 1;
+                            }
                         }
                     }
                 }
             }
+
             // Reset the cheapest vector after merging trees
             fill(cheapest.begin(), cheapest.end(), vector<int>(3, -1));
         }

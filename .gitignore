@@ -1,4 +1,5 @@
 .vscode
 
 main/edges.txt
-main/genEdge
+main/edges
+main/bs

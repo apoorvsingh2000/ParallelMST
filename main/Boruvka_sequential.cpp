@@ -10,18 +10,16 @@ class Graph {
     // Function to find the parent node of the given node of the graph
     int findParent(vector<int>& parent, int i){
         // Base case
-        if(parent[i] == i)
-            return i;
-
-        // Recursive call to find parent
-        return parent[i] = findParent(parent, parent[i]);
+        while(i != parent[i])
+            i = parent[i];
+        return i;
     }
 
     // Function to join two disjoint sets, does so by the context of ranks
-    void unionSet(vector<int>& parent, vector<int>& rank, int x, int y){
+    void unionSet(vector<int>& parent, vector<int>& rank, int& x_parent, int& y_parent){
         // Retrieve the parents of the given nodes to join
-        int x_parent = findParent(parent, x);
-        int y_parent = findParent(parent, y);
+        //int x_parent = findParent(parent, x);
+        //int y_parent = findParent(parent, y);
 
         // Get the corresponding rank values of the parent nodes (i.e. the depth)
         int x_rank = rank[x_parent];
@@ -105,6 +103,7 @@ public:
             // Once the cheapest edges are found, join them and update corrsponding rank values
             for(int node = 0; node < V; node ++){
                 // if the cheapest weight has been found
+                // cout<<"curr node: "<<node<<endl;
                 if(cheapest[node][2] != -1){
                     // unzip the values of u, v, w
                     int u = cheapest[node][0], v = cheapest[node][1], w = cheapest[node][2];
@@ -114,6 +113,7 @@ public:
                     int parent_v = findParent(parent, v);
 
                     if(parent_u != parent_v){
+                        // printf("%d and %d joined\n", u, v);
                         // Update the weight
                         MSTweight += w;
 
@@ -126,8 +126,8 @@ public:
                 }
             }
 
-            // reset the cheapest vector as we have merged two of the constituent trees
-            cheapest.resize(V, vector<int>(3, -1));
+            // Reset the cheapest vector after merging trees
+            fill(cheapest.begin(), cheapest.end(), vector<int>(3, -1));
         }
 
         printf("Weight of MST is %d\n", MSTweight);
