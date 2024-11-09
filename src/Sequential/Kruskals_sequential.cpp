@@ -162,10 +162,20 @@ int main(int argc, char* argv[]) {
         g -> EnterEdges(u, v, w);
     }
 
+    // Get the start time
+    auto start = std::chrono::high_resolution_clock::now();
+
     // Run Boruvka's MST algorithm
     g -> KruskalMST();
 
+    // Get the end time
+    auto end = std::chrono::high_resolution_clock::now();
+
     g -> PrintMST();
+
+    // Calculate the elapsed time in seconds
+    std::chrono::duration<double> elapsed = end - start;
+    printf("Elapsed time for Kruskal's sequential MST calculation: %lf seconds", elapsed.count());
 
     return 0;
 }

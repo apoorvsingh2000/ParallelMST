@@ -182,12 +182,12 @@ void parseEdges(const string& filename, vector<tuple<int, int, int>>& edges) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("./boruvka t v edges.txt\n");
+    if (argc < 4) {
+        printf("./boruvka_p t v edges.txt\n");
         exit(0);
     }
 
-    string ifile = "";
+    string ifile = "../";
     int vertices = 0;
 
     NUM_THREADS = atoi(argv[1]);
@@ -207,6 +207,17 @@ int main(int argc, char* argv[]) {
         g->addEdge(u, v, w);
     }
 
+    //get start time
+    double itime = omp_get_wtime();
+
     // Run Boruvka's MST algorithm
     g->BoruvkaMST();
+
+    // get end time
+    double ftime = omp_get_wtime();
+
+    double exec_time = ftime - itime;
+    printf("Elapsed time for Boruvka's MST calculation: %lf seconds\n", exec_time);
+
+    return 0;
 }
