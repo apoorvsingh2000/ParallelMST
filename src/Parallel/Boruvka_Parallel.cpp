@@ -75,15 +75,13 @@ public:
         // initialized to -1
         vector<vector<int>> cheapest(V, vector<int>(3, -1));
 
-        // Create and initialize the locks
-        omp_lock_t myLock[V], myParent[V], myNode[V];
+        // Create and initialize the lock
+        omp_lock_t myLock[V];
         #pragma omp parallel num_threads(NUM_THREADS)
         {
             #pragma omp for
             for (int i = 0; i < V; i++) {
                 omp_init_lock(&myLock[i]);
-                omp_init_lock(&myParent[i]);
-                omp_init_lock(&myNode[i]);
             }
         }
 
@@ -124,9 +122,7 @@ public:
             }
 
             // Once the cheapest edges are found, join them and update corresponding rank values
-            #pragma omp parallel num_threads(NUM_THREADS)
             {
-                #pragma omp for
                 for (int node = 0; node < V; node++) {
                     // If the cheapest weight has been found
                     if (cheapest[node][2] != -1) {
@@ -134,51 +130,22 @@ public:
                         int u = cheapest[node][0], v = cheapest[node][1], w = cheapest[node][2];
                         int parent_u, parent_v;
 
-                        // This is a critical section for finding and merging trees
-                        // Set locks for finding the parent so that there is no race cases
-                        #pragma omp critical
-                        {   
-                            // printf("locking %d\n", u);
-                            omp_set_lock(&myNode[u]);
-                            // printf("locked %d\n", u);
-
-                            // printf("locking %d\n", v);
-                            omp_set_lock(&myNode[v]);
-                            // printf("locked %d\n", u);
-                        }
-
+                        // Critical section for finding and merging trees
                         // Find parent of u and v
                         parent_u = findParent(parent, u);
                         parent_v = findParent(parent, v);
-
-                        // Set locks for the parent nodes
-                        #pragma omp critical
-                        if(parent_u != parent_v){
-                            omp_set_lock(&myParent[parent_u]);
-                            omp_set_lock(&myParent[parent_v]);
-                        }
 
                         // Merge trees only if they have different parents
                         if (parent_u != parent_v) {
                             // Update the MST weight
                             MSTweight += w;
 
-                            // Merge the two trees into one, update parent array
+                            // Merge the two trees into one
                             unionSet(parent, rank, parent_u, parent_v);
 
                             // Decrement the number of trees
                             numTrees -= 1;
-
-                            // unlock the set locks for parent id
-                            omp_unset_lock(&myParent[parent_v]);
-                            omp_unset_lock(&myParent[parent_u]);
-
                         }
-
-                        // printf("unlocking %d\n",v);
-                        omp_unset_lock(&myNode[v]);
-                        // printf("unlocking %d\n", u);
-                        omp_unset_lock(&myNode[u]);
                     }
                 }
             }
