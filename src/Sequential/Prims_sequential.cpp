@@ -129,13 +129,24 @@ int main(int argc, char* argv[]) {
     for (const auto& edge : edges) {
         int u, v, w;
         tie(u, v, w) = edge;  // Extract u, v, w from the tuple
-        g->EnterEdges(u, v, w);
+        g -> EnterEdges(u, v, w);
     }
 
-    // Run Boruvka's MST algorithm
-    g->PrimMST();
+    // Get the start time
+    auto start = std::chrono::high_resolution_clock::now();
 
-    g->PrintMST();
+    // Run Boruvka's MST algorithm
+    g -> PrimMST();
+
+    // Get the end time
+    auto end = std::chrono::high_resolution_clock::now();
+
+    g -> PrintMST();
+
+    // Calculate the elapsed time in seconds
+    std::chrono::duration<double> elapsed = end - start;
+    printf("Elapsed time for Prim's sequential MST calculation: %lf seconds", elapsed.count());
+
 
     return 0;
 }

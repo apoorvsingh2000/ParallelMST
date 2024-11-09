@@ -170,7 +170,7 @@ void parseEdges(const string& filename, vector<tuple<int, int, int>>& edges) {
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
-        printf("./boruvka v edges.txt\n");
+        printf("./boruvka_s v edges.txt\n");
         exit(0);
     }
 
@@ -185,16 +185,27 @@ int main(int argc, char* argv[]) {
 
     // Example graph (4 vertices, 5 edges)
     Graph* g = new Graph(vertices);
-
     // Add edges to graph
     for (const auto& edge : edges) {
         int u, v, w;
         tie(u, v, w) = edge;  // Extract u, v, w from the tuple
-        g->addEdge(u, v, w);
+        g -> addEdge(u, v, w);
     }
 
+    // Get the start time
+    auto start = std::chrono::high_resolution_clock::now();
+
     // Run Boruvka's MST algorithm
-    g->BoruvkaMST();
+    g -> BoruvkaMST();
+
+    // Get the end time
+    auto end = std::chrono::high_resolution_clock::now();
 
     g -> PrintMST();
+
+    // Calculate the elapsed time in seconds
+    std::chrono::duration<double> elapsed = end - start;
+    printf("Elapsed time for Boruvka's sequential MST calculation: %lf seconds", elapsed.count());
+
+    return 0;
 }
