@@ -36,6 +36,9 @@ void BoruvkaGraph_p :: unionSet(vector<int>& parent, vector<int>& rank, int& x_p
 BoruvkaGraph_p :: BoruvkaGraph_p(int vertices, int n = 1) {
     NUMTHREADS = n;
     V = vertices;
+
+    graph = vector<vector<int>> ();
+    Parent = vector<vector<int>> ();
 }
 
 // Add edges to the adj. matrix
@@ -136,6 +139,9 @@ void BoruvkaGraph_p :: BoruvkaMST() {
                         // Merge the two trees into one
                         unionSet(parent, rank, parent_u, parent_v);
 
+                        // Add edge to final list
+                        Parent.push_back({u, v, w});
+
                         // Decrement the number of trees
                         numTrees -= 1;
                     }
@@ -151,3 +157,9 @@ void BoruvkaGraph_p :: BoruvkaMST() {
     printf("Weight of MST is %d\n", MSTweight);
 }
 
+void BoruvkaGraph_p :: PrintBoruvkaMST() {
+    printf("Edge \tWeight\n");
+    for(auto& p : Parent){
+        printf("%d - %d \t%d\n", p[0], p[1], p[2]);
+    }
+}

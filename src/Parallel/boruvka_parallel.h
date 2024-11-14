@@ -12,6 +12,7 @@ class BoruvkaGraph_p {
     int NUMTHREADS;
     int V; // Number of vertices
     vector<vector<int>> graph; // Adjacency matrix to store weights of graph
+    vector<vector<int>> Parent;
 
     int findParent(vector<int>& parent, int i);
 
@@ -23,6 +24,8 @@ public:
     // Add edges to the adj. matrix
     void EnterEdges(int u, int v, int w);
 
+    void PrintBoruvkaMST();
+    
     // Boruvka's Algorithm MAIN
     void BoruvkaMST();
 };
