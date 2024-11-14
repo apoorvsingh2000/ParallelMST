@@ -1,40 +1,21 @@
-#include<bits/stdc++.h>
+#include <prims_sequential.h>
 
-using namespace std;
+PrimsGraph :: PrimsGraph(int V, int s){
+    selection = s;
+    graph = vector<vector<int>> (V, vector<int> (V));
+    Vertices = V;
+    parent = vector<int> (V, -1);
+    key = vector<int> (V, INT_MAX);
+    MSTset = vector<bool> (V, false);
+}
 
-class Graph {
-    // Store all edges
-    vector<vector<int>> graph;
-    // Parent node for the current
-    vector<int> parent;
-    // Weight to the node
-    vector<int> key;
-    // Whether included in MST or not
-    vector<bool> MSTset;
-
-    int Vertices;
-public:
-    Graph(int V){
-        graph = vector<vector<int>> (V, vector<int> (V));
-        Vertices = V;
-        parent = vector<int> (V, -1);
-        key = vector<int> (V, INT_MAX);
-        MSTset = vector<bool> (V, false);
-    }
-
-    void EnterEdges(int&, int&, int&);
-    pair<int,int> FindNextMin();
-    void PrimMST();
-    void PrintMST();
-};
-
-void Graph :: EnterEdges(int& u, int& v, int& w) {
+void PrimsGraph :: EnterEdges(int& u, int& v, int& w) {
     graph[u][v] = w;
     graph[v][u] = w;
     return;
 }
 
-pair<int,int> Graph :: FindNextMin() {
+pair<int,int> PrimsGraph :: FindNextMin() {
     int min = INT_MAX, min_idx;
 
     for(int v = 0; v < Vertices; v ++) {
@@ -47,7 +28,7 @@ pair<int,int> Graph :: FindNextMin() {
     return {min_idx, min};
 }
 
-void Graph :: PrimMST() {
+void PrimsGraph :: PrimMST() {
     // our first node to be entered into the MST will always be NODE 0
     key[0] = 0;
     parent[0] = -1;
@@ -79,74 +60,9 @@ void Graph :: PrimMST() {
     return;
 }
 
-void Graph :: PrintMST() {
+void PrimsGraph :: PrintPrimsMST() {
     printf("Edge \tWeight\n");
     for(int i = 1; i < Vertices; i ++){
         printf("%d - %d \t%d\n", parent[i], i, graph[i][parent[i]]);
     }
-}
-
-// Function to parse the input text file and store edges in a vector
-void parseEdges(const string& filename, vector<tuple<int, int, int>>& edges) {
-    ifstream file(filename);  // Open the file
-
-    if (!file.is_open()) {
-        cerr << "Error: Could not open the file!" << endl;
-        return;
-    }
-
-    string line;
-    while (getline(file, line)) {
-        stringstream ss(line);  // Create a stringstream for the current line
-        int u, v, w;
-        ss >> u >> v >> w;  // Read u, v, w from the line
-
-        // Add the edge (u, v, w) to the edges vector
-        edges.push_back(make_tuple(u, v, w));
-    }
-
-    file.close();  // Close the file
-}
-
-int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("./prims_s v edges.txt\n");
-        exit(0);
-    }
-
-    string ifile = "../";
-    int vertices = 0;
-
-    vertices = atoi(argv[1]);
-    ifile += argv[2];
-
-    vector<tuple<int,int,int>> edges;
-    parseEdges(ifile, edges);
-
-    // Example graph (4 vertices, 5 edges)
-    Graph* g = new Graph(vertices);
-    // Add edges to graph
-    for (const auto& edge : edges) {
-        int u, v, w;
-        tie(u, v, w) = edge;  // Extract u, v, w from the tuple
-        g -> EnterEdges(u, v, w);
-    }
-
-    // Get the start time
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // Run Boruvka's MST algorithm
-    g -> PrimMST();
-
-    // Get the end time
-    auto end = std::chrono::high_resolution_clock::now();
-
-    g -> PrintMST();
-
-    // Calculate the elapsed time in seconds
-    std::chrono::duration<double> elapsed = end - start;
-    printf("Elapsed time for Prim's sequential MST calculation: %lf seconds", elapsed.count());
-
-
-    return 0;
 }

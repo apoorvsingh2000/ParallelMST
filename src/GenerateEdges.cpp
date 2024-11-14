@@ -2,8 +2,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
-#include <set>
-#include <utility>
+#include <vector>
+#include <algorithm>
+#include <random>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ int main(int argc, char* argv[]) {
     int E, V;
     string filename;
 
-    if(argc < 4) {
+    if (argc < 4) {
         cout << "Usage: ./genEdge <vertices> <edges> <filename.txt>" << endl;
         exit(0);
     }
@@ -20,7 +21,7 @@ int main(int argc, char* argv[]) {
     E = stoi(argv[2]);
     filename = argv[3];
 
-    if(E > (V * (V - 1)) / 2) {
+    if (E > (V * (V - 1)) / 2) {
         cout << "Wrong configuration of Vertices and Edges entered" << endl;
         cout << "E_max = V * (V - 1) / 2" << endl;
         exit(0);
@@ -29,6 +30,21 @@ int main(int argc, char* argv[]) {
     // Seed for random number generation
     srand(time(0));
 
+    // Generate all possible edges (u, v) where u < v
+    vector<pair<int, int>> allEdges;
+    for (int u = 0; u < V; u++) {
+        for (int v = u + 1; v < V; v++) {
+            allEdges.push_back({u, v});
+        }
+    }
+
+    // Create a random number generator
+    random_device rd;
+    mt19937 g(rd());
+
+    // Shuffle the edges randomly using std::shuffle
+    shuffle(allEdges.begin(), allEdges.end(), g);
+
     // Open output file
     ofstream outFile(filename);
     if (!outFile) {
@@ -36,24 +52,12 @@ int main(int argc, char* argv[]) {
         exit(0);
     }
 
-    // Track generated edges to avoid duplicates
-    set<pair<int, int>> edges;
-
-    // Generate 'E' unique edges
-    while (edges.size() < E) {
-        int u = rand() % V;
-        int v = rand() % V;
-        
-        // Ensure u != v and check for duplicates (both u-v and v-u)
-        if (u != v) {
-            pair<int, int> edge1 = {u, v};
-            pair<int, int> edge2 = {v, u};
-            if (edges.find(edge1) == edges.end() && edges.find(edge2) == edges.end()) {
-                edges.insert(edge1);
-                int w = rand() % 100 + 1; // Random weight between 1 and 100
-                outFile << u << " " << v << " " << w << endl;
-            }
-        }
+    // Write the first 'E' edges to the file with random weights
+    for (int i = 0; i < E; i++) {
+        int u = allEdges[i].first;
+        int v = allEdges[i].second;
+        int w = rand() % 100 + 1; // Random weight between 1 and 100
+        outFile << u << " " << v << " " << w << endl;
     }
 
     outFile.close();
