@@ -17,7 +17,7 @@ Ensure you have access to a compute cluster with the necessary resources, such a
 ### 3. **Installation**:
 Clone the repository and compile the code on the cluster using the following command:
 ```bash
-git clone https://github.com/ayushnaique/ParallelMST.git && cd ParallelMST/src/Sequential && make && cd ../Parallel && make
+git clone https://github.com/ayushnaique/ParallelMST.git && cd ParallelMST/src/Sequential && make && cd ../Parallel && make && cd ../
 ```
 
 To compile the GenerateEdges.cpp file:
