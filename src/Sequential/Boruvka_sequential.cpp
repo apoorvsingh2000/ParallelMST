@@ -1,65 +1,52 @@
-#include <bits/stdc++.h>
+#include <boruvka_sequential.h>
 
-using namespace std;
 
-// Class to represent Graph
-class Graph {
-    int V; // Number of vertices
-    vector<vector<int>> graph; // Adjacency matrix to store weights of graph
-    vector<vector<int>> Parent;
+// Function to find the parent node of the given node of the graph
+int BoruvkaGraph :: findParent(vector<int>& parent, int i){
+    // Base case
+    while(i != parent[i])
+        i = parent[i];
+    return i;
+}
 
-    // Function to find the parent node of the given node of the graph
-    int findParent(vector<int>& parent, int i){
-        // Base case
-        while(i != parent[i])
-            i = parent[i];
-        return i;
+// Function to join two disjoint sets, does so by the context of ranks
+void BoruvkaGraph :: unionSet(vector<int>& parent, vector<int>& rank, int& x_parent, int& y_parent){
+    // Retrieve the parents of the given nodes to join
+    //int x_parent = findParent(parent, x);
+    //int y_parent = findParent(parent, y);
+
+    // Get the corresponding rank values of the parent nodes (i.e. the depth)
+    int x_rank = rank[x_parent];
+    int y_rank = rank[y_parent];
+
+    if(x_rank < y_rank){
+        // Set the parent of x_parent to its opposite half
+        parent[x_parent] = y_parent;
     }
-
-    // Function to join two disjoint sets, does so by the context of ranks
-    void unionSet(vector<int>& parent, vector<int>& rank, int& x_parent, int& y_parent){
-        // Retrieve the parents of the given nodes to join
-        //int x_parent = findParent(parent, x);
-        //int y_parent = findParent(parent, y);
-
-        // Get the corresponding rank values of the parent nodes (i.e. the depth)
-        int x_rank = rank[x_parent];
-        int y_rank = rank[y_parent];
-
-        if(x_rank < y_rank){
-            // Set the parent of x_parent to its opposite half
-            parent[x_parent] = y_parent;
-        }
-        else if(y_rank < x_rank){
-            // Set the parent of y_parent to its opposite half
-            parent[y_parent] = x_parent;
-        }
-        else{ 
-            // Both ranks are equal, increment the rank of one, here x_parent
-            parent[y_parent] = x_parent;
-            rank[x_parent] += 1;
-        }
+    else if(y_rank < x_rank){
+        // Set the parent of y_parent to its opposite half
+        parent[y_parent] = x_parent;
     }
-
-public:
-    Graph(int vertices){
-        // Set the number of vertices
-        V = vertices;
-        
-        graph = vector<vector<int>> ();
-        Parent = vector<vector<int>> ();
+    else{ 
+        // Both ranks are equal, increment the rank of one, here x_parent
+        parent[y_parent] = x_parent;
+        rank[x_parent] += 1;
     }
+}
 
-    void addEdge(int&, int&, int&);
-    void PrintMST();
-    void BoruvkaMST();
-};
+BoruvkaGraph :: BoruvkaGraph(int vertices){
+    // Set the number of vertices
+    V = vertices;
+    
+    graph = vector<vector<int>> ();
+    Parent = vector<vector<int>> ();
+}
 
-void Graph :: addEdge(int& u, int& v, int& w){
+void BoruvkaGraph :: EnterEdges(int& u, int& v, int& w){
     graph.push_back({u, v, w});
 }
 
-void Graph :: BoruvkaMST() {
+void BoruvkaGraph :: BoruvkaMST() {
     // Inintialize parent and rank vector
     vector<int> parent(V);
 
@@ -82,7 +69,7 @@ void Graph :: BoruvkaMST() {
     // Loop till the number of trees become 1
     while(numTrees > 1){
         // Traverse through the edges in the graph and assign lowest weights to all parent nodes.
-        for(int i = 0; i < graph.size(); i ++){
+        for(std::vector<int>::size_type i = 0; i < graph.size(); i ++){
             // Unzip the values of u, v and w
             int u = graph[i][0], v = graph[i][1], w = graph[i][2];
 
@@ -139,73 +126,9 @@ void Graph :: BoruvkaMST() {
     printf("Weight of MST is %d\n", MSTweight);
 }
 
-void Graph :: PrintMST() {
+void BoruvkaGraph :: PrintBoruvkaMST() {
     printf("Edge \tWeight\n");
     for(auto& p : Parent){
         printf("%d - %d \t%d\n", p[0], p[1], p[2]);
     }
-}
-
-// Function to parse the input text file and store edges in a vector
-void parseEdges(const string& filename, vector<tuple<int, int, int>>& edges) {
-    ifstream file(filename);  // Open the file
-
-    if (!file.is_open()) {
-        cerr << "Error: Could not open the file!" << endl;
-        return;
-    }
-
-    string line;
-    while (getline(file, line)) {
-        stringstream ss(line);  // Create a stringstream for the current line
-        int u, v, w;
-        ss >> u >> v >> w;  // Read u, v, w from the line
-
-        // Add the edge (u, v, w) to the edges vector
-        edges.push_back(make_tuple(u, v, w));
-    }
-
-    file.close();  // Close the file
-}
-
-int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        printf("./boruvka_s v edges.txt\n");
-        exit(0);
-    }
-
-    string ifile = "../";
-    int vertices = 0;
-
-    vertices = atoi(argv[1]);
-    ifile += argv[2];
-
-    vector<tuple<int,int,int>> edges;
-    parseEdges(ifile, edges);
-
-    // Example graph (4 vertices, 5 edges)
-    Graph* g = new Graph(vertices);
-    // Add edges to graph
-    for (const auto& edge : edges) {
-        int u, v, w;
-        tie(u, v, w) = edge;  // Extract u, v, w from the tuple
-        g -> addEdge(u, v, w);
-    }
-
-    // Get the start time
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // Run Boruvka's MST algorithm
-    g -> BoruvkaMST();
-
-    // Get the end time
-    auto end = std::chrono::high_resolution_clock::now();
-
-    g -> PrintMST();
-
-    // Calculate the elapsed time in seconds
-    std::chrono::duration<double> elapsed = end - start;
-    printf("Elapsed time for Boruvka's sequential MST calculation: %lf seconds", elapsed.count());
-
-    return 0;
 }
