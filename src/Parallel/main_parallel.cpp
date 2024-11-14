@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
         exit(0);
     }
 
-    string ifile = "../";
+    string ifile = "";
     int vertices = 0;
     int edge = 0;
     int NUMTHREADS = 1;
