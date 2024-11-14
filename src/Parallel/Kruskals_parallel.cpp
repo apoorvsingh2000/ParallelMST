@@ -89,6 +89,9 @@ void KruskalsGraph_p :: SortList() {
 
         case 5 : bitonicSortWrapper(edgeList, NUMTHREADS, 1);
                  break;
+        
+        case 6 : Wrapper(edgeList, NUMTHREADS);
+                 break;
 
         default : printf("Enter correct selection for sorting algorithm!\n");
                   exit(0);
