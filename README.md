@@ -67,5 +67,5 @@ Example command:
 # Generate edges and store in edges.txt
 ./edges 4000 1000000 edges.txt
 # Run for parallel algorithms with 4 threads
-./parallel 4 4000 1000000 6 edges.txt (6 : will use Optimized bitonic sort)
+./parallel 4 4000 1000000 6 edges.txt #(6 : will use Optimized bitonic sort)
 ```
