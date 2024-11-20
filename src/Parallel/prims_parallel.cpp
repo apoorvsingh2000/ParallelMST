@@ -52,24 +52,16 @@ pair<int, int> PrimsGraph_p::FindNextMin() {
         case 2 : parallelBubbleSort(Thread_values, NUMTHREADS);                 // Parallel Bubble sort
                  break;
 
-        case 3 : {
-                    int length = Thread_values.size();                          // Parallel Quick Sort
-                    int s = 0, e = length - 1;
-                    parallelQuickSort(Thread_values, s, e, NUMTHREADS);
-                    break;
-                }
+        case 3 : parallelQuickSort(Thread_values, NUMTHREADS);               // Parallel Quick Sort
+                 break;
 
-        case 4 : {
-                    int length = Thread_values.size(); // Parallel Merge Sort
-                    int s = 0, e = length - 1;
-                    parallelMergeSort(Thread_values, s, e, NUMTHREADS);
-                    break;
-                 }
+        case 4 : parallelMergeSort(Thread_values, NUMTHREADS);               // Parallel Merge Sort
+                 break;
 
         case 5 : bitonicSortWrapper(Thread_values, NUMTHREADS, 1);              // Naive Parallel Bitonic sort
                  break;
 
-        case 6 : Wrapper(Thread_values, NUMTHREADS);                         // Optimized Bitonic Sorting
+        case 6 : Wrapper(Thread_values, NUMTHREADS);                            // Optimized Bitonic Sorting
                  break;
 
         default : printf("Enter correct selection for sorting algorithm!\n");

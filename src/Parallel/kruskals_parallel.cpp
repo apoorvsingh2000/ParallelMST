@@ -13,11 +13,10 @@ UnionSet_p :: UnionSet_p(int n) {
 }
 
 int UnionSet_p :: findParent(int node) {
-    while(node != parent[node]) {
-        node = parent[node];
-    }
+    if(parent[node] == node)
+        return node;
 
-    return node;
+    return parent[node] = findParent(parent[node]);
 }
 
 void UnionSet_p :: Union(int& u, int& v) {
@@ -73,20 +72,12 @@ void KruskalsGraph_p :: SortList() {
         case 2 : parallelBubbleSort(edgeList, NUMTHREADS);
                  break;
 
-        case 3 : {
-                    int length = edgeList.size();
-                    int s = 0, e = length - 1;
-                    parallelQuickSort(edgeList, s, e, NUMTHREADS);
-                    break;
-                }
+        case 3 : parallelQuickSort(edgeList, NUMTHREADS);
+                 break;
 
-        case 4 : {
-                    int length = edgeList.size();
-                    int s = 0, e = length - 1;
-                    parallelMergeSort(edgeList, s, e, NUMTHREADS);
-                    break;
-                 }
-
+        case 4 : parallelMergeSort(edgeList, NUMTHREADS);
+                 break;
+                 
         case 5 : bitonicSortWrapper(edgeList, NUMTHREADS, 1);
                  break;
         
