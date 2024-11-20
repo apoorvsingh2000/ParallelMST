@@ -6,6 +6,7 @@
 #include <parallel/algorithm>
 #include<parallel_sort.h>
 #include <parallel/settings.h>
+#include <cmath>
 
 using namespace std;
 

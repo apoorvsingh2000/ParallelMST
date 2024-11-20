@@ -12,11 +12,11 @@ UnionSet :: UnionSet(int n) {
 }
 
 int UnionSet :: findParent(int node) {
-    while(node != parent[node]) {
-        node = parent[node];
+    if(parent[node] == node) {
+        return node;
     }
 
-    return node;
+    return parent[node] = findParent(parent[node]);
 }
 
 void UnionSet :: Union(int& u, int& v) {
