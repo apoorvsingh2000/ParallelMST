@@ -33,7 +33,7 @@ void SequentialBubbleSort(std::vector<std::vector<int>>& edgeList) {
 // ========================================
 void SequentialQuickSort(std::vector<std::vector<int>>& edgeList, int low, int high) {
     if (low < high) {
-        int pivot = edgeList[high][0]; // Choose pivot
+        int pivot = edgeList[low + (high - low) / 2][0]; // Choose pivot
         int i = low - 1;
         for (int j = low; j < high; j++) {
             if (edgeList[j][0] < pivot) {
