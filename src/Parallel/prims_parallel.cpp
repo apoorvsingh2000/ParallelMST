@@ -1,6 +1,6 @@
 #include <prims_parallel.h>
 
-PrimsGraph_p :: PrimsGraph_p(int V, int s, int n = 1){
+PrimsGraph_p :: PrimsGraph_p(int V, int s, int n){
     NUMTHREADS = n;
     selection = s;
     graph = vector<vector<int>> (V, vector<int> (V));

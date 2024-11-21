@@ -44,7 +44,7 @@ void UnionSet_p :: Union(int& u, int& v) {
     return;
 }
 
-KruskalsGraph_p :: KruskalsGraph_p(int V, int s, int n = 1) {
+KruskalsGraph_p :: KruskalsGraph_p(int V, int s, int n) {
     NUMTHREADS = n;
     selection = s;
     Vertices = V;
