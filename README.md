@@ -15,9 +15,14 @@ Ensure you have access to a compute cluster with the necessary resources, such a
 - **C++ Version** 11
 
 ### 3. **Installation**:
-Clone the repository and compile the code on the cluster using the following command:
+Clone the repository using the command:
 ```bash
-git clone https://github.com/ayushnaique/ParallelMST.git && cd ParallelMST/src/Sequential && make && cd ../Parallel && make && cd ../
+git clone https://github.com/ayushnaique/ParallelMST.git 
+```
+
+Once the repository is cloned run:
+```bash
+cd ParallelMST/src/Sequential && make sequential && cd ../Parallel && make parallel && cd ../
 ```
 
 To compile the GenerateEdges.cpp file:
@@ -26,9 +31,10 @@ g++ -std=c++11 -o edges GenerateEdges.cpp
 ```
 
 ### 4. **Command Line Arguments**:
-The above command will result in two executables:
+The above command will result in three executables:
 - parallel
 - sequential
+- edges
 These executables are used to run the final code, which will output the MST weight and the runtime for all three algorithms
 
 Generating Edges: 
@@ -47,7 +53,7 @@ command for sequential is :
 ```
 
 ### 5. **Sorting Algorithms**:
-Parallel has a total of 6 algorithms that can be used
+Parallel has a total of 6 algorithms that can be used (in Prim's and Kruskal's Algorithm)
 1) In built parallel_sort
 2) Parallel Bubble Sort
 3) Parallel Quick Sort
@@ -55,7 +61,7 @@ Parallel has a total of 6 algorithms that can be used
 5) Naive Parallel Bitonic Sort
 6) Optimized Bitonic Sort
 
-Sequential has a total of 5 algorithms that can be used
+Sequential has a total of 5 algorithms that can be used (For kruskal's Algorithm)
 1) In built STL sort 
 2) Bubble Sort
 3) Quick Sort
