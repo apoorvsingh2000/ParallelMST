@@ -8,20 +8,20 @@ OBJS = $(OBJ_DIR)/main_parallel.o $(OBJ_DIR)/parallel_sort.o $(OBJ_DIR)/boruvka_
 
 # Ensure the object directory exists
 $(OBJ_DIR):
-        mkdir -p $(OBJ_DIR)
+	mkdir -p $(OBJ_DIR)
 
 # The target for compiling the final program
 parallel: $(OBJ_DIR) $(OBJS)
-        $(CC) -o ../parallel $(OBJS) $(CFLAGS)
+	$(CC) -o ../parallel $(OBJS) $(CFLAGS)
 
 # Rule for compiling .cpp to .o
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-        $(CC) -c $< $(CFLAGS) -o $@
+	$(CC) -c $< $(CFLAGS) -o $@
 
 $(OBJ_DIR)/main_parallel.o: main_parallel.cpp
-        $(CC) -c $< $(CFLAGS) -o $@
+	$(CC) -c $< $(CFLAGS) -o $@
 
 # Clean up the generated files
 clean:
-        rm -f ../parallel $(OBJ_DIR)/*.o *~
-        rm -rf $(OBJ_DIR)
+	rm -f ../parallel $(OBJ_DIR)/*.o *~
+	rm -rf $(OBJ_DIR)
